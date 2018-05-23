@@ -1,4 +1,3 @@
 # LaserTag
-LaserTag Project\n
-TODO: Scores Health ETC, Strip code\n
+TODO: Scores Health ETC, Strip code
 Done: ir Comms and error Checking

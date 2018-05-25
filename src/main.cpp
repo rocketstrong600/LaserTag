@@ -7,7 +7,7 @@ int shot_timer = 0;
 unsigned long previousMillis = 0;
 
 void setup() {
-  pinMode(8, INPUT_PULLUP);
+  pinMode(4, INPUT_PULLUP);
 }
 
 void loop() {
@@ -15,7 +15,7 @@ void loop() {
   if (currentMillis - previousMillis >= 160) {
     fired = false;
   }
-  if (digitalRead(8) == LOW && !fired) {
+  if (digitalRead(4) == LOW && !fired) {
     previousMillis = currentMillis;
     mttx.fireShot(1, 21, 100);
     fired = true;

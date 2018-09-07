@@ -2,16 +2,42 @@
   MilesTag.cpp - Library for infared milestag protical.
   Created by Ethan G. Johnston, April 8, 2018.
   Released into the public domain.
-  Using IRremote library
 */
 
 #include "Arduino.h"
 #include "MilesTag.h"
-#include "IRremote.h"
+#include <driver/rmt.h>
+
+#define IR_PIN  GPIO_NUM_17
+
+#define DEBUG_SCALE 1
+#define CDEBUG 1
+
+#define HEADER_US 2400
+#define SPACE_US 600
+#define ONE_US 1200
+#define ZERO_US 600
+
 
 //transmit code
 MilesTagTX::MilesTagTX()
 {
+  // put your setup code here, to run once:
+  configTx.rmt_mode = RMT_MODE_TX;
+  configTx.channel = RMT_CHANNEL_0;
+  configTx.gpio_num = IR_PIN;
+  configTx.mem_block_num = 1;
+  configTx.tx_config.loop_en = 0;
+  configTx.tx_config.carrier_duty_percent = 50;
+  configTx.tx_config.carrier_freq_hz = 56000;
+  configTx.tx_config.carrier_en = CDEBUG;
+  configTx.tx_config.idle_output_en = 1;
+  configTx.tx_config.idle_level = RMT_IDLE_LEVEL_LOW;
+  configTx.tx_config.carrier_level = RMT_CARRIER_LEVEL_HIGH;
+  configTx.clk_div = 80; // 80MHx / 80 = 1MHz 0r 1uS per count
+
+  rmt_config(&configTx);
+  rmt_driver_install(configTx.channel, 0, 0);  //  rmt_driver_install(rmt_channel_t channel, size_t rx_buf_size, int rmt_intr_num)
 
 }
 
@@ -28,8 +54,31 @@ void MilesTagTX::fireShot(unsigned long teamId, unsigned long playerId, unsigned
   irTransmit(Data);
 }
 
-void MilesTagTX::irTransmit(unsigned long Data) {
-  irsend.sendSony(Data, 14);
+void MilesTagTX::irTransmit(unsigned long data) {
+  int nbits = 14;
+  //header
+  items[0].duration0 = HEADER_US*DEBUG_SCALE;
+  items[0].level0 = 1;
+  items[0].duration1 = SPACE_US*DEBUG_SCALE;
+  items[0].level1 = 0;
+
+	// Data
+  int i = 1;
+	for (unsigned long  mask = 1UL << (nbits - 1);  mask;  mask >>= 1) {
+		if (data & mask) {
+      items[i].duration0 = ONE_US*DEBUG_SCALE;
+      items[i].level0 = 1;
+      items[i].duration1 = SPACE_US*DEBUG_SCALE;
+      items[i].level1 = 0;
+		} else {
+      items[i].duration0 = ZERO_US*DEBUG_SCALE;
+      items[i].level0 = 1;
+      items[i].duration1 = SPACE_US*DEBUG_SCALE;
+      items[i].level1 = 0;
+    }
+    i++;
+  }
+  rmt_write_items(configTx.channel, items, 15, 0);
 }
 
 unsigned long MilesTagTX::DamagetoBin(unsigned long dmg) {

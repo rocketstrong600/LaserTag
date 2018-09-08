@@ -6,18 +6,23 @@
 
 #include "Arduino.h"
 #include "MilesTag.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
+#include "freertos/semphr.h"
 #include <driver/rmt.h>
 
 #define IR_PIN  GPIO_NUM_17
 #define REC_PIN  GPIO_NUM_16
 
 #define DEBUG_SCALE 1
-#define CDEBUG 1
+#define CDEBUG 0
 
 #define HEADER_US 2400
 #define SPACE_US 600
 #define ONE_US 1200
 #define ZERO_US 600
+#define OFFSET 50
 
 
 //transmit code
@@ -154,6 +159,53 @@ MilesTagRX::MilesTagRX()
 
   rmt_config(&configRx);
   rmt_driver_install(configRx.channel, 1000, 0);  //  rmt_driver_install(rmt_channel_t channel, size_t rx_buf_size, int rmt_intr_num)
+  Serial.begin(115200);
+}
+
+
+unsigned long MilesTagRX::BufferPull() {
+  RingbufHandle_t rb = NULL;
+  rmt_get_ringbuf_handle(RMT_CHANNEL_1, &rb);
+  rmt_rx_start(RMT_CHANNEL_1, 1);
+  while(rb) {
+      size_t rx_size = 0;
+      rmt_item32_t* item = (rmt_item32_t*) xRingbufferReceive(rb, &rx_size, 1000);
+      if (item) {
+        if(item[0].duration0 < (HEADER_US+OFFSET) && item[0].duration0 > (HEADER_US-OFFSET)) {
+            Serial.print(item[1].duration0);
+            Serial.print(" ");
+            Serial.print(item[2].duration0);
+            Serial.print(" ");
+            Serial.print(item[3].duration0);
+            Serial.print(" ");
+            Serial.print(item[4].duration0);
+            Serial.print(" ");
+            Serial.print(item[5].duration0);
+            Serial.print(" ");
+            Serial.print(item[6].duration0);
+            Serial.print(" ");
+            Serial.print(item[7].duration0);
+            Serial.print(" ");
+            Serial.print(item[8].duration0);
+            Serial.print(" ");
+            Serial.print(item[9].duration0);
+            Serial.print(" ");
+            Serial.print(item[10].duration0);
+            Serial.print(" ");
+            Serial.print(item[11].duration0);
+            Serial.print(" ");
+            Serial.print(item[12].duration0);
+            Serial.print(" ");
+            Serial.print(item[13].duration0);
+            Serial.print(" ");
+            Serial.println(item[14].duration0);
+        }
+        vRingbufferReturnItem(rb, (void*) item);
+      } else {
+        break;
+      }
+    }
+  return 0;
 }
 
 MTShotRecieved MilesTagRX::DecodeShotData(unsigned long data) {

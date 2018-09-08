@@ -35,6 +35,7 @@ class MilesTagRX
   public:
     MilesTagRX();
     MTShotRecieved DecodeShotData(unsigned long data);
+    unsigned long BufferPull();
     rmt_config_t configRx;
     rmt_item32_t items[15];
   private:

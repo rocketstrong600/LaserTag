@@ -35,6 +35,8 @@ class MilesTagRX
   public:
     MilesTagRX();
     MTShotRecieved DecodeShotData(unsigned long data);
+    rmt_config_t configRx;
+    rmt_item32_t items[15];
   private:
     unsigned long BintoDamage(unsigned long dmg);
     unsigned long has_even_parity(unsigned long x);

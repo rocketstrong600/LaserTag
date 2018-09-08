@@ -9,6 +9,7 @@
 #include <driver/rmt.h>
 
 #define IR_PIN  GPIO_NUM_17
+#define REC_PIN  GPIO_NUM_16
 
 #define DEBUG_SCALE 1
 #define CDEBUG 1
@@ -141,6 +142,18 @@ unsigned long MilesTagTX::add_parity(unsigned long x){
 
 MilesTagRX::MilesTagRX()
 {
+  // put your setup code here, to run once:
+  configRx.rmt_mode = RMT_MODE_RX;
+  configRx.channel = RMT_CHANNEL_1;
+  configRx.gpio_num = REC_PIN;
+  configRx.mem_block_num = 1;
+  configRx.rx_config.filter_en = true;
+  configRx.rx_config.filter_ticks_thresh = 200;
+  configRx.rx_config.idle_threshold = 3000;
+  configRx.clk_div = 80; // 80MHx / 80 = 1MHz 0r 1uS per count
+
+  rmt_config(&configRx);
+  rmt_driver_install(configRx.channel, 1000, 0);  //  rmt_driver_install(rmt_channel_t channel, size_t rx_buf_size, int rmt_intr_num)
 }
 
 MTShotRecieved MilesTagRX::DecodeShotData(unsigned long data) {

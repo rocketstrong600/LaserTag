@@ -159,6 +159,7 @@ MilesTagRX::MilesTagRX()
 
   rmt_config(&configRx);
   rmt_driver_install(configRx.channel, 1000, 0);  //  rmt_driver_install(rmt_channel_t channel, size_t rx_buf_size, int rmt_intr_num)
+//Debug Code For checing timings
   Serial.begin(115200);
 }
 
@@ -172,6 +173,8 @@ unsigned long MilesTagRX::BufferPull() {
       rmt_item32_t* item = (rmt_item32_t*) xRingbufferReceive(rb, &rx_size, 1000);
       if (item) {
         if(item[0].duration0 < (HEADER_US+OFFSET) && item[0].duration0 > (HEADER_US-OFFSET)) {
+          //Debug Code For checing timings
+          //TODO: write code that turns pulse lengths into unsigned long
             Serial.print(item[1].duration0);
             Serial.print(" ");
             Serial.print(item[2].duration0);

@@ -6,6 +6,7 @@ MilesTagRX mtrx;
 void setup() {
   Serial.begin(115200);
   delay(500);
+  // teamid, playerid, Damage.
   mttx.fireShot(1, 21, 100);
   delay(500);
   mtrx.BufferPull();

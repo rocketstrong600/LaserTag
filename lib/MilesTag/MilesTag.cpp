@@ -84,7 +84,7 @@ void MilesTagTX::irTransmit(unsigned long data) {
     }
     i++;
   }
-  rmt_write_items(configTx.channel, items, 15, 0);
+  rmt_write_items(configTx.channel, items, 15, 1);
 }
 
 unsigned long MilesTagTX::DamagetoBin(unsigned long dmg) {
@@ -158,57 +158,48 @@ MilesTagRX::MilesTagRX()
   configRx.clk_div = 80; // 80MHx / 80 = 1MHz 0r 1uS per count
 
   rmt_config(&configRx);
-  rmt_driver_install(configRx.channel, 1000, 0);  //  rmt_driver_install(rmt_channel_t channel, size_t rx_buf_size, int rmt_intr_num)
-//Debug Code For checing timings
-  Serial.begin(115200);
+  rmt_driver_install(configRx.channel, 1000, 0);
+  rmt_rx_start(RMT_CHANNEL_1, 1);
 }
 
+void MilesTagRX::ClearHits() {
+  for (int i = 0; i < 20; i++) {
+    Hits[i].PlayerID = 0;
+    Hits[i].Damage = 0;
+    Hits[i].TeamID = 0;
+    Hits[i].Error = true;
+  }
+}
 
-unsigned long MilesTagRX::BufferPull() {
+void MilesTagRX::BufferPull() {
+  unsigned long data = 0;
   RingbufHandle_t rb = NULL;
   rmt_get_ringbuf_handle(RMT_CHANNEL_1, &rb);
-  rmt_rx_start(RMT_CHANNEL_1, 1);
   while(rb) {
       size_t rx_size = 0;
       rmt_item32_t* item = (rmt_item32_t*) xRingbufferReceive(rb, &rx_size, 1000);
       if (item) {
-        if(item[0].duration0 < (HEADER_US+OFFSET) && item[0].duration0 > (HEADER_US-OFFSET)) {
-          //Debug Code For checing timings
-          //TODO: write code that turns pulse lengths into unsigned long
-            Serial.print(item[1].duration0);
-            Serial.print(" ");
-            Serial.print(item[2].duration0);
-            Serial.print(" ");
-            Serial.print(item[3].duration0);
-            Serial.print(" ");
-            Serial.print(item[4].duration0);
-            Serial.print(" ");
-            Serial.print(item[5].duration0);
-            Serial.print(" ");
-            Serial.print(item[6].duration0);
-            Serial.print(" ");
-            Serial.print(item[7].duration0);
-            Serial.print(" ");
-            Serial.print(item[8].duration0);
-            Serial.print(" ");
-            Serial.print(item[9].duration0);
-            Serial.print(" ");
-            Serial.print(item[10].duration0);
-            Serial.print(" ");
-            Serial.print(item[11].duration0);
-            Serial.print(" ");
-            Serial.print(item[12].duration0);
-            Serial.print(" ");
-            Serial.print(item[13].duration0);
-            Serial.print(" ");
-            Serial.println(item[14].duration0);
+        rmt_item32_t* itemproc = item;
+        for(size_t i=0; i < (rx_size / 4); i++) {
+          if(itemproc->duration0 < (HEADER_US+OFFSET) && itemproc->duration0 > (HEADER_US-OFFSET)) {
+            for(int i=14; i >= 1; i--) {
+              if (itemproc[i].duration0 < (ONE_US+OFFSET) && itemproc[i].duration0 > (ONE_US-OFFSET)) {
+                data = data | 1 << (14 - i);
+              } else if(itemproc[i].duration0 < (ZERO_US+OFFSET) && itemproc[i].duration0 > (ZERO_US-OFFSET)) {
+                data = data | 0 << (14 - i);
+              }
+            }
+            Hits[Datacount] = DecodeShotData(data);
+            Datacount++;
+            data = 0;
+          }
+          ++itemproc;
         }
         vRingbufferReturnItem(rb, (void*) item);
       } else {
         break;
       }
     }
-  return 0;
 }
 
 MTShotRecieved MilesTagRX::DecodeShotData(unsigned long data) {

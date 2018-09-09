@@ -27,7 +27,7 @@ typedef struct MTShotRecieved {
   unsigned long PlayerID;
   unsigned long TeamID;
   unsigned long Damage;
-  boolean Error;
+  bool Error = true;
 } MTShotRecieved;
 
 class MilesTagRX
@@ -35,9 +35,11 @@ class MilesTagRX
   public:
     MilesTagRX();
     MTShotRecieved DecodeShotData(unsigned long data);
-    unsigned long BufferPull();
+    void ClearHits();
+    void BufferPull();
     rmt_config_t configRx;
-    rmt_item32_t items[15];
+    MTShotRecieved Hits[20];
+    int Datacount;
   private:
     unsigned long BintoDamage(unsigned long dmg);
     unsigned long has_even_parity(unsigned long x);

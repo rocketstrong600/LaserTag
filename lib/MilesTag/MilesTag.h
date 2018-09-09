@@ -43,7 +43,7 @@ class MilesTagRX
     void BufferPull();
     rmt_config_t configRx;
     MTShotRecieved Hits[20];
-    int Datacount;
+    int HitCount;
   private:
     unsigned long BintoDamage(unsigned long dmg);
     unsigned long has_even_parity(unsigned long x);

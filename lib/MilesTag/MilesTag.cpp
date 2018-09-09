@@ -26,7 +26,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #define SPACE_US 600
 #define ONE_US 1200
 #define ZERO_US 600
-#define OFFSET 50
+#define OFFSET 100
 
 
 //transmit code
@@ -173,6 +173,7 @@ void MilesTagRX::ClearHits() {
     Hits[i].TeamID = 0;
     Hits[i].Error = true;
   }
+  HitCount = 0;
 }
 
 void MilesTagRX::BufferPull() {
@@ -193,8 +194,8 @@ void MilesTagRX::BufferPull() {
                 data = data | 0 << (14 - i);
               }
             }
-            Hits[Datacount] = DecodeShotData(data);
-            Datacount++;
+            Hits[HitCount] = DecodeShotData(data);
+            HitCount++;
             data = 0;
           }
           ++itemproc;

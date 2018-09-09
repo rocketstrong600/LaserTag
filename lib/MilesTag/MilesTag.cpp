@@ -158,7 +158,7 @@ MilesTagRX::MilesTagRX()
   configRx.mem_block_num = 1;
   configRx.rx_config.filter_en = true;
   configRx.rx_config.filter_ticks_thresh = 200;
-  configRx.rx_config.idle_threshold = 3000;
+  configRx.rx_config.idle_threshold = HEADER_US + OFFSET;
   configRx.clk_div = 80; // 80MHx / 80 = 1MHz 0r 1uS per count
 
   rmt_config(&configRx);
@@ -241,40 +241,8 @@ MTShotRecieved MilesTagRX::DecodeShotData(unsigned long data) {
 }
 
 unsigned long MilesTagRX::BintoDamage(unsigned long dmg) {
-  if (dmg >= 15) {
-    dmg = 100;
-  } else if (dmg >= 14) {
-    dmg = 75;
-  } else if (dmg >= 13) {
-    dmg = 50;
-  } else if (dmg >= 12) {
-    dmg = 40;
-  } else if (dmg >= 11) {
-    dmg = 35;
-  } else if (dmg >= 10) {
-    dmg = 30;
-  } else if (dmg >= 9) {
-    dmg = 25;
-  } else if (dmg >= 8) {
-    dmg = 20;
-  } else if (dmg >= 7) {
-    dmg = 17;
-  } else if (dmg >= 6) {
-    dmg = 15;
-  } else if (dmg >= 5) {
-    dmg = 10;
-  } else if (dmg >= 4) {
-    dmg = 7;
-  } else if (dmg >= 3) {
-    dmg = 5;
-  } else if (dmg >= 2) {
-    dmg = 4;
-  } else if (dmg >= 1) {
-    dmg = 2;
-  } else if (dmg >= 0) {
-    dmg = 1;
-  }
-  return dmg;
+  unsigned long dmgarray[16] = {1, 2, 4, 5, 7, 10, 15, 17, 20, 25, 30, 35, 40, 50, 75, 100};
+  return dmgarray[dmg];
 }
 
 unsigned long MilesTagRX::has_even_parity(unsigned long x){

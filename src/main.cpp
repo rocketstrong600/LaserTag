@@ -14,6 +14,7 @@ void setup() {
   Serial.println(mtrx.Hits[0].PlayerID);
   Serial.println(mtrx.Hits[0].TeamID);
   Serial.println(mtrx.Hits[0].Damage);
+  mtrx.ClearHits();
 }
 
 void loop() {

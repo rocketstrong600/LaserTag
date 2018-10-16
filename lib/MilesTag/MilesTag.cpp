@@ -30,7 +30,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 //transmit code
-MilesTagTX::MilesTagTX(freq=56)
+MilesTagTX::MilesTagTX(uint32_t freq=56)
 {
   // put your setup code here, to run once:
   configTx.rmt_mode = RMT_MODE_TX;

@@ -5,7 +5,7 @@
 <p>http://www.lasertagparts.com/mtformat-2.htm</P>
 
 <p>IF YOU ARE USING THE LIBRARY IN RELEASE CHANGE #define CDEBUG 0 to #define CDEBUG 1 in MilesTag.cpp. this enable the frequency generator for ir.</p>
-<p> configTx.tx_config.carrier_freq_hz = 56000 in MilesTag.cpp. is the ir frequency.</p>
+<p> MilesTagTX(uint32_t freq) sets ir frequency defaults to 56khz.</p>
 <p>Basic Use can be seen in main.cpp</p>
 # Progress
 <p>TODO: Structure Recieve Code, Scores, Health, Add Board Schematics</p>

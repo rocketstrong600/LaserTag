@@ -30,7 +30,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 //transmit code
-MilesTagTX::MilesTagTX()
+MilesTagTX::MilesTagTX(freq=56)
 {
   // put your setup code here, to run once:
   configTx.rmt_mode = RMT_MODE_TX;
@@ -39,7 +39,7 @@ MilesTagTX::MilesTagTX()
   configTx.mem_block_num = 1;
   configTx.tx_config.loop_en = 0;
   configTx.tx_config.carrier_duty_percent = 50;
-  configTx.tx_config.carrier_freq_hz = 56000;
+  configTx.tx_config.carrier_freq_hz = freq*1000;
   configTx.tx_config.carrier_en = CDEBUG;
   configTx.tx_config.idle_output_en = 1;
   configTx.tx_config.idle_level = RMT_IDLE_LEVEL_LOW;

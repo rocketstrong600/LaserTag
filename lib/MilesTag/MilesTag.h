@@ -16,7 +16,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 class MilesTagTX
 {
   public:
-    MilesTagTX(uint32_t freq);
+    MilesTagTX(uint32_t freq=56);
     void fireShot(unsigned long teamId, unsigned long playerId, unsigned long dmg);
     rmt_config_t configTx;
     rmt_item32_t items[15];

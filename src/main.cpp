@@ -14,14 +14,22 @@ void loop() {
   mttx.fireShot(1, 21, 75);
   delay(2000);
   mtrx.BufferPull();
-  Serial.println(mtrx.Hits[0].Error);
-  Serial.println(mtrx.Hits[0].PlayerID);
-  Serial.println(mtrx.Hits[0].TeamID);
+  Serial.print("H1 E: ");
+  Serial.print(mtrx.Hits[0].Error);
+  Serial.print(" P: ");
+  Serial.print(mtrx.Hits[0].PlayerID);
+  Serial.print(" T: ");
+  Serial.print(mtrx.Hits[0].TeamID);
+  Serial.print(" D: ");
   Serial.println(mtrx.Hits[0].Damage);
 
-  Serial.println(mtrx.Hits[1].Error);
-  Serial.println(mtrx.Hits[1].PlayerID);
-  Serial.println(mtrx.Hits[1].TeamID);
+  Serial.print("H2 E: ");
+  Serial.print(mtrx.Hits[1].Error);
+  Serial.print(" P: ");
+  Serial.print(mtrx.Hits[1].PlayerID);
+  Serial.print(" T: ");
+  Serial.print(mtrx.Hits[1].TeamID);
+  Serial.print(" D: ");
   Serial.println(mtrx.Hits[1].Damage);
   mtrx.ClearHits();
 }
